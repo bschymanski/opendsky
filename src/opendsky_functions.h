@@ -519,7 +519,8 @@ void mode1() //inputing the verb
   processkey1(); 
 }
 
-void mode2() {//inputing the noun
+void mode2() //inputing the noun
+{
   lampit(0,150,0, 0);
   flashkr();
    if(error == 1){flasher();}
@@ -527,7 +528,8 @@ void mode2() {//inputing the noun
  processkey2(); 
 }
 
-void mode3() {//inputing the program
+void mode3() //inputing the program
+{
   lampit(0,150,0, 1);
   flashkr();
    if(error == 1){flasher();}
@@ -535,7 +537,8 @@ void mode3() {//inputing the program
  processkey3();
 }
 
-void mode4() {
+void mode4() // Init / Lamptest
+{
   for (int index = 0; index < 4; index++){lampit(0,150,0, index);}
   for (int index = 4; index < 11; index++) {lampit(100,100,0, index);}
   for (int index = 11; index < 18; index++) {lampit(100,100,100, index);}
@@ -560,7 +563,7 @@ void mode4() {
   keyVal = 20;
   mode = 0;
   validateAct(); 
-  }
+} // End Lamptest
 
 
 void action1() {

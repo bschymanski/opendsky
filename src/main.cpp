@@ -52,10 +52,10 @@ void loop() {
  if (prog == 70){jfk(3);}
  if (prog == 69){jfk(2);}  
  if (mode == 0) {mode0();}
- if (mode == 1) {mode1();}
- if (mode == 2) {mode2();}
- if (mode == 3) {mode3();}
- if (mode == 4) {mode4();}
+ if (mode == 1) {mode1();} //inputing the verb
+ if (mode == 2) {mode2();} //inputing the noun
+ if (mode == 3) {mode3();} //inputing the program
+ if (mode == 4) {mode4();} // Init / Lamptest
  
 
  if (togcount == 4) {togcount = 0;if (toggle == 0) {toggle = 1;}else{toggle = 0;}}

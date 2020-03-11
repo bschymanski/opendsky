@@ -28,7 +28,7 @@ pixels.begin();
 
 for(int index = 0; index < 4; index++){
   lc.shutdown(index,false); 
-  lc.setIntensity(index,3);
+  lc.setIntensity(index,9);
   lc.clearDisplay(index); 
   }
   

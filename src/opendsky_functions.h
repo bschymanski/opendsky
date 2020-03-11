@@ -540,19 +540,58 @@ void mode3() //inputing the program
 
 void mode4() // Init / Lamptest
 {
-  for (int index = 0; index < 4; index++){lampit(0,150,0, index);}
-  for (int index = 4; index < 11; index++) {lampit(100,100,0, index);}
-  for (int index = 11; index < 18; index++) {lampit(100,100,100, index);}
-  for (int index = 0; index < 4; index++) {
-    for (int indexb = 0; indexb < 6; indexb++){
+  // Light ON for: Noun, Prog, Verb and CompAct LEDs
+  for (int index = 0; index < 4; index++)
+  {
+    lampit(0,150,0, index);
+    delay(500); // wait a bit after each LED, just for the effect
+  }
+  // Light ON for: LR Velocity Data, LR Altitude Data, Tracker, Program Condition, Gimbal Lock, Temperature LEDs
+  for (int index = 4; index < 11; index++)
+  {
+    lampit(100,100,0, index);
+    delay(500); // wait a bit after each LED, just for the effect
+  }
+  // Light ON for: 11, 12, Operator Error, Key Release, Standby Status, NO Attitude, Uplink Activity LEDs
+  for (int index = 11; index < 18; index++)
+  {
+    lampit(100,100,100, index);
+    delay(500); // wait a bit after each LED, just for the effect
+  }
+  // Light ON for all 3 Register Lines
+  for (int index = 0; index < 4; index++)
+  {
+    for (int indexb = 0; indexb < 6; indexb++)
+    {
       setdigits(index,indexb,8);
+      delay(500); // wait a bit after each LED, just for the effect
     }
   }
-  delay(5000);
-  for (int index = 0; index < 4; index++){lampit(0,0,0, index);}
-  for (int index = 4; index < 11; index++) {lampit(0,0,0, index);}
-  for (int index = 11; index < 18; index++) {lampit(0,0,0, index);}
-  for (int index = 0; index < 4; index++) {lc.clearDisplay(index); }
+  delay(5000); // wait 5 Seconds, then turn the LEDs off
+  // Light OFF for: Noun, Prog, Verb and CompAct LEDs
+  for (int index = 0; index < 4; index++)
+  {
+    lampit(0,0,0, index);
+    delay(500); // wait a bit after each LED, just for the effect
+  }
+  // Light OFF for: LR Velocity Data, LR Altitude Data, Tracker, Program Condition, Gimbal Lock, Temperature LEDs
+  for (int index = 4; index < 11; index++)
+  {
+    lampit(0,0,0, index);
+    delay(500); // wait a bit after each LED, just for the effect
+  }
+  // Light OFF for: 11, 12, Operator Error, Key Release, Standby Status, NO Attitude, Uplink Activity LEDs
+  for (int index = 11; index < 18; index++)
+  {
+    lampit(0,0,0, index);
+    delay(500); // wait a bit after each LED, just for the effect
+  }
+  // Light ON for all 3 Register Lines
+  for (int index = 0; index < 4; index++)
+  {
+    lc.clearDisplay(index);
+    delay(500); // wait a bit after each LED, just for the effect
+  }
   verbnew[0] = verbold[0]; verbnew[1] = verbold[1];
   verb = ((verbold[0] * 10) + verbold[1]);
   if (verb == 0) {lc.setRow(0,0,0);lc.setRow(0,1,0);}
@@ -564,8 +603,8 @@ void mode4() // Init / Lamptest
   keyVal = 20;
   mode = 0;
   validateAct(); 
-} // End Lamptest
-
+}
+// End mode4
 
 void action1() {
  readimu(); 

@@ -46,7 +46,8 @@ rtc.begin();
 }
 
 void loop() {
- // Default mode and action are 0, Program will only read the Keyboard
+  // Default mode and action are 0, Program will only read the Keyboard
+ // Verb 35 = mode4() - Lamptest
  if (prog == 62){jfk(1);}
  if (prog == 70){jfk(3);}
  if (prog == 69){jfk(2);}  

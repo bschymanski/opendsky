@@ -37,9 +37,10 @@ void validateAct()
 }
 // End validateAct()
 
-void lampit(byte r, byte g, byte b , int lamp) {
-    pixels.setPixelColor(lamp, pixels.Color(r,g,b)); // Set it the way we like it.
-    pixels.show(); // This sends the updated pixel color to the hardware.
+void lampit(byte r, byte g, byte b , int lamp)
+{
+  pixels.setPixelColor(lamp, pixels.Color(r,g,b)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
 }
 // end lampit()
 

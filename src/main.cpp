@@ -16,7 +16,6 @@ const int MPU_addr=0x69;  // I2C address of the MPU-6050
 #include <opendsky_global_variables.h>
 #include <opendsky_functions.h>
 
-
 void setup() {
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);

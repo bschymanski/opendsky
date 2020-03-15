@@ -24,56 +24,76 @@ void setup() {
   pinMode(7, OUTPUT);
   digitalWrite(7, LOW);
   randomSeed(analogRead(A7));
-pixels.begin();
+  pixels.begin();
 
-for(int index = 0; index < 4; index++){
-  lc.shutdown(index,false); 
-  lc.setIntensity(index,9);
-  lc.clearDisplay(index); 
+  for(int index = 0; index < 4; index++)
+  {
+    lc.shutdown(index,false); 
+    lc.setIntensity(index,12);
+    lc.clearDisplay(index); 
   }
+  Wire.begin();
+  Wire.beginTransmission(MPU_addr);
+  Wire.write(0x6B);  // PWR_MGMT_1 register
+  Wire.write(0);     // set to zero (wakes up the MPU-6050)
+  Wire.endTransmission(true);
   
- Wire.begin();
-      Wire.beginTransmission(MPU_addr);
-      Wire.write(0x6B);  // PWR_MGMT_1 register
-      Wire.write(0);     // set to zero (wakes up the MPU-6050)
-      Wire.endTransmission(true);
-
-rtc.begin();
-      
- Serial.begin(9600);
- 
- //  Serial.println("Read Value from Analog pin & Print value");
+  rtc.begin();
+  Serial.begin(9600);
+  //  Serial.println("Read Value from Analog pin & Print value");
+  //Light up PRO, NOUN, VERB and NO ATT
+  startUp();
 }
 
 void loop() {
   // Default mode and action are 0, Program will only read the Keyboard
- // Verb 35 = mode4() - Lamptest
- if (prog == 62){jfk(1);}
- if (prog == 70){jfk(3);}
- if (prog == 69){jfk(2);}  
- if (mode == 0) {mode0();}
- if (mode == 1) {mode1();} //inputing the verb
- if (mode == 2) {mode2();} //inputing the noun
- if (mode == 3) {mode3();} //inputing the program
- if (mode == 4) {mode4();} // Init / Lamptest
+  // Verb 35 = mode4() - Lamptest
+  if (prog == 62){jfk(1);}
+  if (prog == 70){jfk(3);}
+  if (prog == 69){jfk(2);}  
+  if (mode == 0) {mode0();}
+  if (mode == 1) {mode1();} //inputing the verb
+  if (mode == 2) {mode2();} //inputing the noun
+  if (mode == 3) {mode3();} //inputing the program
+  if (mode == 4) {mode4();} // Init / Lamptest
  
-
- if (togcount == 4) {togcount = 0;if (toggle == 0) {toggle = 1;}else{toggle = 0;}}
- togcount++;
- if (action == 3){ togcount = 4;delay(200);} else {delay(100);}
+  if (togcount == 4)
+  {
+    togcount = 0;
+    if (toggle == 0)
+    {
+      toggle = 1;
+    }
+    else
+    {
+      toggle = 0;
+    }
+  }
+  togcount++;
+  if (action == 3)
+  {
+    togcount = 4;
+    delay(200);
+  }
+  else
+  {
+    delay(100);
+  }
  
- delay(100);
+  delay(100);
 
  if(action == 1) {action1();} // V16N17 ReadIMU
  if(action == 2) {action2();} // V16N36 ReadTime
  if(action == 3) {action3();} // V16N43 Read GPS
  if(action == 5) {action5();} // V21N36 Set The Time
  if(action == 6) {action6();} // V21N37 Set The Date
- Serial.print(verb);
- Serial.print("  ");
- Serial.print(noun);
- Serial.print("  ");
- Serial.println(action);
+ if(action == 9) {action9();} // V16N19 Read Temp Date & Time
+ //Serial.print("verb :");
+ //Serial.print(verb);
+ //Serial.print(" noun: ");
+ //Serial.print(noun);
+ //Serial.print(" action: ");
+ //Serial.println(action);
 }
 
 

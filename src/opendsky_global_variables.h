@@ -26,4 +26,5 @@ bool newAct = 0;
 
 byte minus = B00100100;
 byte plus = B01110100;
+byte digit_off = B00000000;  // kein Vorzeichen
 byte ohne_vz = B00000000;  // kein Vorzeichen

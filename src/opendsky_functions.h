@@ -51,6 +51,16 @@ void verb_light_on()
   pixels.setPixelColor(2, pixels.Color(0,150,0)); // Set it the way we like it.
   pixels.show(); // This sends the updated pixel color to the hardware.
 }
+void verb_light_yellow()
+{
+  pixels.setPixelColor(2, pixels.Color(150,150,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+void verb_light_orange()
+{
+  pixels.setPixelColor(2, pixels.Color(150,0,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
 void verb_light_off()
 {
   pixels.setPixelColor(2, pixels.Color(0,0,0)); // Set it the way we like it.
@@ -60,6 +70,16 @@ void verb_light_off()
 void noun_light_on()
 {
   pixels.setPixelColor(0, pixels.Color(0,150,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+void noun_light_yellow()
+{
+  pixels.setPixelColor(0, pixels.Color(150,150,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+void noun_light_orange()
+{
+  pixels.setPixelColor(0, pixels.Color(150,0,0)); // Set it the way we like it.
   pixels.show(); // This sends the updated pixel color to the hardware.
 }
 void noun_light_off()
@@ -100,6 +120,15 @@ void setdigits(byte maxim, byte digit, byte value){
 }
 // setdigits()
 
+void PrintMode(){
+  lc.setDigit(0,2,mode,false);
+}
+// PrintMode()
+void PrintAction(){
+  lc.setDigit(0,3,action,false);
+}
+// PrintAction()
+
 void processkey0()
 {
   // Check if a new key has been pressed, if yes, store the key value in oldkey
@@ -114,9 +143,9 @@ void processkey0()
     mode = 1; // A verb is going to be entered, so program mode1 will be startet
     fresh = 0; 
     byte keeper = verb; // now lets save the verb in keeper
-    Serial.println(" ");
-    Serial.print("Processkey0 keeper: ");
-    Serial.println(keeper);
+    //Serial.println(" ");
+    //Serial.print("Processkey0 keeper: ");
+    //Serial.println(keeper);
     // we are going to save the old verb in the variable verbold first.
     for(int index = 0; keeper >= 10; keeper = (keeper - 10))
     { 
@@ -209,7 +238,7 @@ void processkey1() // Process the Verb
     {
       mode = 2;
       //lampit(0,0,0, 2);
-      verb_light_on();
+      verb_light_off();
       count = 0; 
       fresh = 0;
     }//noun
@@ -217,7 +246,7 @@ void processkey1() // Process the Verb
     {
       mode = 3;
       //lampit(0,0,0, 2);
-      verb_light_on();
+      verb_light_off();
       count = 0; 
       fresh = 0;
     }//program
@@ -528,6 +557,8 @@ void readimu()
 
 void mode0() //no action set just reading the kb
 {
+  PrintMode();
+  PrintAction();
   if (newAct == 1)
   {
     validateAct();
@@ -546,11 +577,17 @@ void mode0() //no action set just reading the kb
 
 void mode1() //inputing the verb
 {
-  verb_light_on(); //Verb Light ON
+  PrintMode();
   flashkr();
   if(error == 1)
   {
     flasher();
+    verb_light_orange();
+  } 
+  else
+  {
+    //verb_light_on(); //Verb Light ON
+    verb_light_yellow();
   }
   keyVal = readkb();
   processkey1(); 
@@ -558,15 +595,26 @@ void mode1() //inputing the verb
 
 void mode2() //inputing the noun
 {
-  lampit(0,150,0, 0);
+  PrintMode();
+  //lampit(0,150,0, 0);
   flashkr();
-   if(error == 1){flasher();}
+  if(error == 1)
+  {
+    flasher();
+    noun_light_orange();
+  }
+  else
+  {
+    noun_light_yellow();
+  }
+  
  keyVal = readkb();
  processkey2(); 
 }
 
 void mode3() //inputing the program
 {
+  PrintMode();
   lampit(0,150,0, 1);
   flashkr();
    if(error == 1){flasher();}
@@ -653,12 +701,15 @@ void startUp()
   }
   keyVal = 20;
   mode = 0;
+  PrintMode();
+  PrintAction();
   validateAct(); 
 }
 // End startUp
 
 void mode4() // Init / Lamptest
 {
+  PrintMode();
   // Light ON for: Noun, Prog, Verb and CompAct LEDs
   for (int index = 0; index < 4; index++)
   {
@@ -727,19 +778,25 @@ void mode4() // Init / Lamptest
 // End mode4
 
 void action1() {
+ PrintMode();
+ PrintAction();
  readimu(); 
 }
 
 void action2() { // Reads Time from RTC
+  PrintMode();
+  PrintAction();
   DateTime now = rtc.now();
-   imuval[4] = (now.hour());
-   imuval[5] = (now.minute());
-   imuval[6] = ((now.second() * 100));
-   setDigits();  
+  imuval[4] = (now.hour());
+  imuval[5] = (now.minute());
+  imuval[6] = ((now.second() * 100));
+  setDigits();  
 }
 
 void action3() //Read GPS
-{     
+{ 
+  PrintMode();
+  PrintAction();
   digitalWrite(7,HIGH);
   delay(20);
   byte data[83];
@@ -767,7 +824,7 @@ void action3() //Read GPS
   int lat = 0;
   int lon = 0;
   int alt = 0;
-  if (count < 10)
+  /*if (count < 10)
   {
     count++;
     lat = (((data[18] - 48) * 1000) + ((data[19] -48) * 100) + ((data[20] - 48) * 10) + ((data[21] - 48)));
@@ -781,9 +838,12 @@ void action3() //Read GPS
     lon = (((data[34] - 48) * 10000) + ((data[36] - 48) * 1000) + ((data[37] -48) * 100) + ((data[38] - 48) * 10) + ((data[39] - 48)));
     alt = (((data[52] -48) * 100) + ((data[53] - 48) * 10) + ((data[54] - 48)));
   }
-  if (count > 25) {count = 0;}
-  if (data[28] != 78) {lat = ((lat - (lat + lat)));}
-  if (data[41] != 69) {lon = ((lon - (lon + lon)));} 
+  if (count > 25) {count = 0;} */
+  lat = (((data[18] - 48) * 1000) + ((data[19] -48) * 100) + ((data[20] - 48) * 10) + ((data[21] - 48)));
+  lon = (((data[30] - 48) * 10000) + ((data[31] - 48) * 1000) + ((data[32] -48) * 100) + ((data[33] - 48) * 10) + ((data[34] - 48)));
+  alt = (((data[52] -48) * 100) + ((data[53] - 48) * 10) + ((data[54] - 48)));
+  /* if (data[28] != 78) {lat = ((lat - (lat + lat)));}
+  if (data[41] != 69) {lon = ((lon - (lon + lon)));} */
   imuval[4] = lat;
   imuval[5] = lon;
   imuval[6] = alt;
@@ -793,6 +853,8 @@ void action3() //Read GPS
 
 void action5()  // Sets Time To RTC
 {
+  PrintMode();
+  PrintAction();
   DateTime now = rtc.now();
   int NYR = now.year();
   int NMO = now.month();
@@ -854,14 +916,17 @@ void action5()  // Sets Time To RTC
  action = 2; setdigits(0, 0, 1);setdigits(0, 1, 6);verbold[0] = 1; verbold[1] = 6; verb = 16; 
 }
 
-void action6(){
-   byte setyear[4];
-   byte setmonth[2];
-   byte setday[2];
-   byte sethour[2];
-   byte setminiut[2];
-   byte setsecond[2];
-DateTime now = rtc.now();
+void action6()
+{
+  PrintMode();
+  PrintAction();
+  byte setyear[4];
+  byte setmonth[2];
+  byte setday[2];
+  byte sethour[2];
+  byte setminiut[2];
+  byte setsecond[2];
+  DateTime now = rtc.now();
   int NYR = now.year();
   int NMO = now.month();
   int NDY = now.day();
@@ -872,12 +937,22 @@ DateTime now = rtc.now();
  rtc.adjust(DateTime(((setyear[0] * 1000) + (setyear[1] * 100) + (setyear[2] * 10) + (setyear[3])), ((setmonth[0] * 10) + (setmonth[1])),((setday[0] * 10) + (setday[1])), NHR,NMI,NSE)); 
 }
 
+
+
+void action7() // Print GPS
+{
+  /* */
+}
 void mode11() {
- compAct(); 
+ compAct();
+ PrintMode();
+ PrintAction(); 
 }
 
 void tempDateTime()
 {
+  PrintMode();
+  PrintAction();
   compAct();
   Wire.beginTransmission(MPU_addr);
   Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
@@ -933,5 +1008,7 @@ void tempDateTime()
   setdigits(3,5,(int(temp) % 10));
 }
 void action9(){
+  PrintMode();
+  PrintAction();
   tempDateTime();
 }

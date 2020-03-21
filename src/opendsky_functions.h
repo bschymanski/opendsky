@@ -87,6 +87,27 @@ void noun_light_off()
   pixels.setPixelColor(0, pixels.Color(0,0,0)); // Set it the way we like it.
   pixels.show(); // This sends the updated pixel color to the hardware.
 }
+
+void tracker_light_on()
+{
+  pixels.setPixelColor(8, pixels.Color(0,150,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+void tracker_light_yellow()
+{
+  pixels.setPixelColor(8, pixels.Color(150,150,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+void tracker_light_orange()
+{
+  pixels.setPixelColor(8, pixels.Color(150,0,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+void tracker_light_off()
+{
+  pixels.setPixelColor(8, pixels.Color(0,0,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
 // end lampit()
 void flashkr()
 {
@@ -800,7 +821,6 @@ void action3() //Read GPS
   digitalWrite(7,HIGH);
   delay(20);
   byte data[83];
-  int x = 0;
   while((Serial.available()) > 0)
   {
     int x =  Serial.read();
@@ -824,7 +844,7 @@ void action3() //Read GPS
   int lat = 0;
   int lon = 0;
   int alt = 0;
-  /*if (count < 10)
+  if (count < 10)
   {
     count++;
     lat = (((data[18] - 48) * 1000) + ((data[19] -48) * 100) + ((data[20] - 48) * 10) + ((data[21] - 48)));
@@ -834,21 +854,43 @@ void action3() //Read GPS
   else
   {
     count++;
-    lat = (((data[21] - 48) * 10000) + ((data[23] - 48) * 1000) + ((data[24] -48) * 100) + ((data[25] - 48) * 10) + ((data[26] - 48)));
-    lon = (((data[34] - 48) * 10000) + ((data[36] - 48) * 1000) + ((data[37] -48) * 100) + ((data[38] - 48) * 10) + ((data[39] - 48)));
+    lat = (((data[18] - 48) * 1000) + ((data[19] -48) * 100) + ((data[20] - 48) * 10) + ((data[21] - 48)));
+    lon = (((data[30] - 48) * 10000) + ((data[31] - 48) * 1000) + ((data[32] -48) * 100) + ((data[33] - 48) * 10) + ((data[34] - 48)));
     alt = (((data[52] -48) * 100) + ((data[53] - 48) * 10) + ((data[54] - 48)));
+    // lat = (((data[21] - 48) * 10000) + ((data[23] - 48) * 1000) + ((data[24] -48) * 100) + ((data[25] - 48) * 10) + ((data[26] - 48)));
+    // lon = (((data[34] - 48) * 10000) + ((data[36] - 48) * 1000) + ((data[37] -48) * 100) + ((data[38] - 48) * 10) + ((data[39] - 48)));
+    // alt = (((data[52] -48) * 100) + ((data[53] - 48) * 10) + ((data[54] - 48)));
   }
-  if (count > 25) {count = 0;} */
-  lat = (((data[18] - 48) * 1000) + ((data[19] -48) * 100) + ((data[20] - 48) * 10) + ((data[21] - 48)));
-  lon = (((data[30] - 48) * 10000) + ((data[31] - 48) * 1000) + ((data[32] -48) * 100) + ((data[33] - 48) * 10) + ((data[34] - 48)));
-  alt = (((data[52] -48) * 100) + ((data[53] - 48) * 10) + ((data[54] - 48)));
-  /* if (data[28] != 78) {lat = ((lat - (lat + lat)));}
-  if (data[41] != 69) {lon = ((lon - (lon + lon)));} */
+  if (count > 25) {
+    count = 0;
+  }
+  if (data[28] != 78)
+  {
+    //lat = ((lat - (lat + lat)));
+  }
+  if (data[41] != 69)
+  {
+    //lon = ((lon - (lon + lon)));
+  } 
   imuval[4] = lat;
   imuval[5] = lon;
   imuval[6] = alt;
   digitalWrite(7,LOW);
-  setDigits();  
+  Serial.print("D1  : ");  Serial.print(data[1]); Serial.print(" D2  : "); Serial.print(data[2]); Serial.print(" D3  : ");  Serial.print(data[3]);
+  Serial.print(" D4  : "); Serial.print(data[4]); Serial.print(" D5  : "); Serial.print(data[5]); Serial.print(" D6  : "); Serial.print(data[6]);
+  Serial.print(" D7  : "); Serial.print(data[7]); Serial.print(" D8  : "); Serial.print(data[8]); Serial.print(" D9  : "); Serial.print(data[9]);
+  Serial.print(" D10 : "); Serial.println(data[10]);
+  
+  Serial.print("D11 : ");  Serial.print(data[11]); Serial.print(" D12 : "); Serial.print(data[12]); Serial.print(" D13 : ");  Serial.print(data[13]);
+  Serial.print(" D14 : "); Serial.print(data[14]); Serial.print(" D15 : "); Serial.print(data[15]); Serial.print(" D16 : "); Serial.print(data[16]);
+  Serial.print(" D17 : "); Serial.print(data[17]); Serial.print(" D18 : "); Serial.print(data[18]); Serial.print(" D19 : "); Serial.print(data[19]);
+  Serial.print(" D20 : "); Serial.println(data[20]);
+
+  Serial.print("D21 : ");  Serial.print(data[21]); Serial.print(" D22 : "); Serial.print(data[22]); Serial.print(" D23 : ");  Serial.print(data[23]);
+  Serial.print(" D24 : "); Serial.print(data[24]); Serial.print(" D25 : "); Serial.print(data[25]); Serial.print(" D26 : "); Serial.print(data[26]);
+  Serial.print(" D27 : "); Serial.print(data[27]); Serial.print(" D28 : "); Serial.print(data[28]); Serial.print(" D29 : "); Serial.print(data[29]);
+  Serial.print(" D30 : "); Serial.println(data[30]);
+  setDigits();   
 }
 
 void action5()  // Sets Time To RTC

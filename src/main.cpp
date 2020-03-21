@@ -16,9 +16,23 @@ const int MPU_addr=0x69;  // I2C address of the MPU-6050
 #include <opendsky_global_variables.h>
 #include <opendsky_functions.h>
 
+// Timer funktion
+// https://create.arduino.cc/projecthub/Marcazzan_M/internal-timers-of-arduino-58f6c9
+int timer=0;
+bool global_state_1sec=0;
 
+ISR(TIMER0_COMPA_vect){    //This is the interrupt request
+  timer++;
+}
 
 void setup() {
+  TCCR0A=(1<<WGM01);    //Set the CTC mode   
+  OCR0A=0xF9; //Value for ORC0A for 1ms 
+  TIMSK0|=(1<<OCIE0A);   //Set the interrupt request
+  sei(); //Enable interrupt
+  TCCR0B|=(1<<CS01);    //Set the prescale 1/64 clock
+  TCCR0B|=(1<<CS00);
+  
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
   pinMode(A2, INPUT);
@@ -59,7 +73,7 @@ void loop() {
   if (mode == 3) {mode3();} //inputing the program
   if (mode == 4) {mode4();} // Init / Lamptest
  
-  if (togcount == 4)
+  /* if (togcount == 4)
   {
     togcount = 0;
     if (toggle == 0)
@@ -83,6 +97,24 @@ void loop() {
   }
  
   delay(100);
+  */
+ 
+  // Global Timer 1 Sec Toggle
+  if(timer>=1000){
+    global_state_1sec=!global_state_1sec;
+    timer=0;
+  }
+  if (global_state_1sec == true)
+  {
+    toggle = 1;
+    tracker_light_on();
+  }
+  else
+  {
+    toggle = 0;
+    tracker_light_off();
+  }
+  
 
  if(action == 1) {action1();} // V16N17 ReadIMU
  if(action == 2) {action2();} // V16N36 ReadTime

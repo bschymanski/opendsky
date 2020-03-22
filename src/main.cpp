@@ -13,11 +13,15 @@ RTC_DS1307 rtc;
 #include<Wire.h>
 const int MPU_addr=0x69;  // I2C address of the MPU-6050
 
+// Timer funktion
 #include <timer.h>
 auto timer = timer_create_default();
 
 #include <opendsky_global_variables.h>
-// Timer funktion
+
+
+#include <TinyGPS++.h>
+TinyGPSPlus gps;
 
 #include <opendsky_functions.h>
 
@@ -47,7 +51,7 @@ void setup() {
   rtc.begin();
   Serial.begin(9600);
   timer.every(1000, toggle_timer);
-  //  Serial.println("Read Value from Analog pin & Print value");
+
   //Light up PRO, NOUN, VERB and NO ATT
   startUp();
 }

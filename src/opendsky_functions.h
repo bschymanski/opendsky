@@ -854,93 +854,16 @@ void action2() { // Reads Time from RTC
 }
 
 
-#include <TinyGPS++.h>
-TinyGPSPlus gps;
 
-void displayInfo()
-{
-  Serial.print(F("Location: ")); 
-  if (gps.location.isValid())
-  {
-    Serial.print(gps.location.lat(), 6);
-    Serial.print(F(","));
-    Serial.print(gps.location.lng(), 6);
-  }
-  else
-  {
-    Serial.print(F("INVALID"));
-  }
-
-  Serial.print(F("  Date/Time: "));
-  if (gps.date.isValid())
-  {
-    Serial.print(gps.date.month());
-    Serial.print(F("/"));
-    Serial.print(gps.date.day());
-    Serial.print(F("/"));
-    Serial.print(gps.date.year());
-  }
-  else
-  {
-    Serial.print(F("INVALID"));
-  }
-
-  Serial.print(F(" "));
-  if (gps.time.isValid())
-  {
-    if (gps.time.hour() < 10) Serial.print(F("0"));
-    Serial.print(gps.time.hour());
-    Serial.print(F(":"));
-    if (gps.time.minute() < 10) Serial.print(F("0"));
-    Serial.print(gps.time.minute());
-    Serial.print(F(":"));
-    if (gps.time.second() < 10) Serial.print(F("0"));
-    Serial.print(gps.time.second());
-    Serial.print(F("."));
-    if (gps.time.centisecond() < 10) Serial.print(F("0"));
-    Serial.print(gps.time.centisecond());
-  }
-  else
-  {
-    Serial.print(F("INVALID"));
-  }
-
-  Serial.println();
-}
 
 
 void action3() //Read GPS
 { 
   PrintMode();
   PrintAction();
-  int ind1;
-  int ind2;
-  int ind3;
-  int ind4;
-  int ind5;
-  int ind6;
-  int ind7;
-  int ind8;
-  int ind9;
-  int ind10;
-  int ind11;
-  int ind12;
-  int ind13;
-  int ind14;
-  String GPGGA;
-  String utctime;
-  String latmain = "0";
-  String latdec = "0";
-  String NS;
-  String lonmain = "0";
-  String londec = "0";
-  String EW;
-  String GPSFIX;
-  String SATused;
-  String altmain = "0";
   if (toggle2 == true && gpsread == true)
   {
-    Serial.println(F("inside loop"));
+    ALT_light_on();
     digitalWrite(7,HIGH);
     //Serial.begin(9600);
     delay(20);
@@ -950,8 +873,6 @@ void action3() //Read GPS
     while((Serial.available()) && (GPS_READ_STARTED == true))
     {
       ALT_light_on();
-      // http://elextutorial.com/learn-arduino/arduino-serial-read-string-until-readstringuntil-function-example/
-      // s1 = Serial.readStringUntil('\r\n');// s1 is String type variable.
       if (gps.encode(Serial.read()))
       {
          ALT_light_orange();

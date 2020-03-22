@@ -68,33 +68,6 @@ void loop() {
   if (mode == 3) {mode3();} //inputing the program
   if (mode == 4) {mode4();} // Init / Lamptest
  
-  /* if (togcount == 4)
-  {
-    togcount = 0;
-    if (toggle == 0)
-    {
-      toggle = 1;
-    }
-    else
-    {
-      toggle = 0;
-    }
-    
-  }
-  togcount++;
-  if (action == 3)
-  {
-    togcount = 4;
-    delay(200);
-  }
-  else
-  {
-    delay(100);
-  }
- 
-  delay(100);
-  */
- 
   // Global Timer 1 Sec Toggle
   timer.tick();
   

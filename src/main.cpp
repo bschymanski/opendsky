@@ -13,25 +13,15 @@ RTC_DS1307 rtc;
 #include<Wire.h>
 const int MPU_addr=0x69;  // I2C address of the MPU-6050
 
+#include <timer.h>
+auto timer = timer_create_default();
+
 #include <opendsky_global_variables.h>
+// Timer funktion
+
 #include <opendsky_functions.h>
 
-// Timer funktion
-// https://create.arduino.cc/projecthub/Marcazzan_M/internal-timers-of-arduino-58f6c9
-int timer=0;
-bool global_state_1sec=0;
-
-ISR(TIMER0_COMPA_vect){    //This is the interrupt request
-  timer++;
-}
-
 void setup() {
-  TCCR0A=(1<<WGM01);    //Set the CTC mode   
-  OCR0A=0xF9; //Value for ORC0A for 1ms 
-  TIMSK0|=(1<<OCIE0A);   //Set the interrupt request
-  sei(); //Enable interrupt
-  TCCR0B|=(1<<CS01);    //Set the prescale 1/64 clock
-  TCCR0B|=(1<<CS00);
   
   pinMode(A0, INPUT);
   pinMode(A1, INPUT);
@@ -56,6 +46,7 @@ void setup() {
   
   rtc.begin();
   Serial.begin(9600);
+  timer.every(1000, toggle_timer);
   //  Serial.println("Read Value from Analog pin & Print value");
   //Light up PRO, NOUN, VERB and NO ATT
   startUp();
@@ -84,6 +75,7 @@ void loop() {
     {
       toggle = 0;
     }
+    
   }
   togcount++;
   if (action == 3)
@@ -100,20 +92,7 @@ void loop() {
   */
  
   // Global Timer 1 Sec Toggle
-  if(timer>=1000){
-    global_state_1sec=!global_state_1sec;
-    timer=0;
-  }
-  if (global_state_1sec == true)
-  {
-    toggle = 1;
-    tracker_light_on();
-  }
-  else
-  {
-    toggle = 0;
-    tracker_light_off();
-  }
+  timer.tick();
   
 
  if(action == 1) {action1();} // V16N17 ReadIMU

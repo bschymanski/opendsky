@@ -23,8 +23,20 @@ bool toggle = 0;
 byte togcount = 0;
 bool error = 0;
 bool newAct = 0;
+bool gpsread = true;
 
 byte minus = B00100100;
 byte plus = B01110100;
 byte digit_off = B00000000;  // kein Vorzeichen
 byte ohne_vz = B00000000;  // kein Vorzeichen
+
+int lat = 1;
+int lon = 1;
+int alt = 1;
+
+
+int globaltimer=0;
+bool global_state_1sec=false;
+bool toggle2 = false;
+
+bool GPS_READ_STARTED = true;

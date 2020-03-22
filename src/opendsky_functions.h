@@ -90,17 +90,17 @@ void noun_light_off()
 
 void tracker_light_on()
 {
-  pixels.setPixelColor(8, pixels.Color(0,150,0)); // Set it the way we like it.
+  pixels.setPixelColor(8, pixels.Color(70,70,0)); // Set it the way we like it.
   pixels.show(); // This sends the updated pixel color to the hardware.
 }
 void tracker_light_yellow()
 {
-  pixels.setPixelColor(8, pixels.Color(150,150,0)); // Set it the way we like it.
+  pixels.setPixelColor(8, pixels.Color(70,70,0)); // Set it the way we like it.
   pixels.show(); // This sends the updated pixel color to the hardware.
 }
 void tracker_light_orange()
 {
-  pixels.setPixelColor(8, pixels.Color(150,0,0)); // Set it the way we like it.
+  pixels.setPixelColor(8, pixels.Color(100,70,0)); // Set it the way we like it.
   pixels.show(); // This sends the updated pixel color to the hardware.
 }
 void tracker_light_off()
@@ -109,6 +109,45 @@ void tracker_light_off()
   pixels.show(); // This sends the updated pixel color to the hardware.
 }
 // end lampit()
+void ALT_light_on()
+{
+  pixels.setPixelColor(9, pixels.Color(70,70,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+void ALT_light_yellow()
+{
+  pixels.setPixelColor(9, pixels.Color(70,70,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+void ALT_light_orange()
+{
+  pixels.setPixelColor(9, pixels.Color(100,70,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+void ALT_light_off()
+{
+  pixels.setPixelColor(9, pixels.Color(0,0,0)); // Set it the way we like it.
+  pixels.show(); // This sends the updated pixel color to the hardware.
+}
+
+bool toggle_timer(void *)
+{
+  if(global_state_1sec==false){
+    global_state_1sec=true;
+    toggle2 = true;
+    toggle = true;
+    tracker_light_on();
+  }
+  else
+  {
+    global_state_1sec=false;
+    toggle2 = false;
+    toggle = false;
+    tracker_light_off();
+  }
+  return true; // repeat? true
+}
+
 void flashkr()
 {
   if(toggle == 0)
@@ -814,83 +853,128 @@ void action2() { // Reads Time from RTC
   setDigits();  
 }
 
+
+#include <TinyGPS++.h>
+TinyGPSPlus gps;
+
+void displayInfo()
+{
+  Serial.print(F("Location: ")); 
+  if (gps.location.isValid())
+  {
+    Serial.print(gps.location.lat(), 6);
+    Serial.print(F(","));
+    Serial.print(gps.location.lng(), 6);
+  }
+  else
+  {
+    Serial.print(F("INVALID"));
+  }
+
+  Serial.print(F("  Date/Time: "));
+  if (gps.date.isValid())
+  {
+    Serial.print(gps.date.month());
+    Serial.print(F("/"));
+    Serial.print(gps.date.day());
+    Serial.print(F("/"));
+    Serial.print(gps.date.year());
+  }
+  else
+  {
+    Serial.print(F("INVALID"));
+  }
+
+  Serial.print(F(" "));
+  if (gps.time.isValid())
+  {
+    if (gps.time.hour() < 10) Serial.print(F("0"));
+    Serial.print(gps.time.hour());
+    Serial.print(F(":"));
+    if (gps.time.minute() < 10) Serial.print(F("0"));
+    Serial.print(gps.time.minute());
+    Serial.print(F(":"));
+    if (gps.time.second() < 10) Serial.print(F("0"));
+    Serial.print(gps.time.second());
+    Serial.print(F("."));
+    if (gps.time.centisecond() < 10) Serial.print(F("0"));
+    Serial.print(gps.time.centisecond());
+  }
+  else
+  {
+    Serial.print(F("INVALID"));
+  }
+
+  Serial.println();
+}
+
+
 void action3() //Read GPS
 { 
   PrintMode();
   PrintAction();
-  digitalWrite(7,HIGH);
-  delay(20);
-  byte data[83];
-  while((Serial.available()) > 0)
+  int ind1;
+  int ind2;
+  int ind3;
+  int ind4;
+  int ind5;
+  int ind6;
+  int ind7;
+  int ind8;
+  int ind9;
+  int ind10;
+  int ind11;
+  int ind12;
+  int ind13;
+  int ind14;
+  String GPGGA;
+  String utctime;
+  String latmain = "0";
+  String latdec = "0";
+  String NS;
+  String lonmain = "0";
+  String londec = "0";
+  String EW;
+  String GPSFIX;
+  String SATused;
+  String altmain = "0";
+  if (toggle2 == true && gpsread == true)
   {
-    int x =  Serial.read();
-  }
-  while((Serial.available()) < 1)
-  {
-    int x = 1;
-  }
-  delay(6);
-  int index = 0;
-  while(Serial.available() > 0)
-  {
-    data[index] = Serial.read();
-    delayMicroseconds(960);
-    index++;
-    if(index >= 72)
+    Serial.println(F("inside loop"));
+    digitalWrite(7,HIGH);
+    //Serial.begin(9600);
+    delay(20);
+    gpsread = false;
+    delay(6);
+    // int index = 0;
+    while((Serial.available()) && (GPS_READ_STARTED == true))
     {
-      index = 71;
+      ALT_light_on();
+      // http://elextutorial.com/learn-arduino/arduino-serial-read-string-until-readstringuntil-function-example/
+      // s1 = Serial.readStringUntil('\r\n');// s1 is String type variable.
+      if (gps.encode(Serial.read()))
+      {
+         ALT_light_orange();
+         GPS_READ_STARTED = false;
+      }
     }
-  }
-  int lat = 0;
-  int lon = 0;
-  int alt = 0;
-  if (count < 10)
-  {
-    count++;
-    lat = (((data[18] - 48) * 1000) + ((data[19] -48) * 100) + ((data[20] - 48) * 10) + ((data[21] - 48)));
-    lon = (((data[30] - 48) * 10000) + ((data[31] - 48) * 1000) + ((data[32] -48) * 100) + ((data[33] - 48) * 10) + ((data[34] - 48)));
-    alt = (((data[52] -48) * 100) + ((data[53] - 48) * 10) + ((data[54] - 48)));
-  }
-  else
-  {
-    count++;
-    lat = (((data[18] - 48) * 1000) + ((data[19] -48) * 100) + ((data[20] - 48) * 10) + ((data[21] - 48)));
-    lon = (((data[30] - 48) * 10000) + ((data[31] - 48) * 1000) + ((data[32] -48) * 100) + ((data[33] - 48) * 10) + ((data[34] - 48)));
-    alt = (((data[52] -48) * 100) + ((data[53] - 48) * 10) + ((data[54] - 48)));
-    // lat = (((data[21] - 48) * 10000) + ((data[23] - 48) * 1000) + ((data[24] -48) * 100) + ((data[25] - 48) * 10) + ((data[26] - 48)));
-    // lon = (((data[34] - 48) * 10000) + ((data[36] - 48) * 1000) + ((data[37] -48) * 100) + ((data[38] - 48) * 10) + ((data[39] - 48)));
-    // alt = (((data[52] -48) * 100) + ((data[53] - 48) * 10) + ((data[54] - 48)));
-  }
-  if (count > 25) {
-    count = 0;
-  }
-  if (data[28] != 78)
-  {
-    //lat = ((lat - (lat + lat)));
-  }
-  if (data[41] != 69)
-  {
-    //lon = ((lon - (lon + lon)));
-  } 
-  imuval[4] = lat;
-  imuval[5] = lon;
-  imuval[6] = alt;
-  digitalWrite(7,LOW);
-  Serial.print("D1  : ");  Serial.print(data[1]); Serial.print(" D2  : "); Serial.print(data[2]); Serial.print(" D3  : ");  Serial.print(data[3]);
-  Serial.print(" D4  : "); Serial.print(data[4]); Serial.print(" D5  : "); Serial.print(data[5]); Serial.print(" D6  : "); Serial.print(data[6]);
-  Serial.print(" D7  : "); Serial.print(data[7]); Serial.print(" D8  : "); Serial.print(data[8]); Serial.print(" D9  : "); Serial.print(data[9]);
-  Serial.print(" D10 : "); Serial.println(data[10]);
-  
-  Serial.print("D11 : ");  Serial.print(data[11]); Serial.print(" D12 : "); Serial.print(data[12]); Serial.print(" D13 : ");  Serial.print(data[13]);
-  Serial.print(" D14 : "); Serial.print(data[14]); Serial.print(" D15 : "); Serial.print(data[15]); Serial.print(" D16 : "); Serial.print(data[16]);
-  Serial.print(" D17 : "); Serial.print(data[17]); Serial.print(" D18 : "); Serial.print(data[18]); Serial.print(" D19 : "); Serial.print(data[19]);
-  Serial.print(" D20 : "); Serial.println(data[20]);
+    digitalWrite(7,LOW);
+    ALT_light_off();
+    Serial.println(gps.location.lat());
+    Serial.println(gps.location.lng());
+    Serial.println(gps.altitude.meters());
+    imuval[4] = gps.location.lat()*100;
+    imuval[5] = gps.location.lng()*100;
+    imuval[6] = gps.altitude.meters();
 
-  Serial.print("D21 : ");  Serial.print(data[21]); Serial.print(" D22 : "); Serial.print(data[22]); Serial.print(" D23 : ");  Serial.print(data[23]);
-  Serial.print(" D24 : "); Serial.print(data[24]); Serial.print(" D25 : "); Serial.print(data[25]); Serial.print(" D26 : "); Serial.print(data[26]);
-  Serial.print(" D27 : "); Serial.print(data[27]); Serial.print(" D28 : "); Serial.print(data[28]); Serial.print(" D29 : "); Serial.print(data[29]);
-  Serial.print(" D30 : "); Serial.println(data[30]);
-  setDigits();   
+    setDigits();
+  }
+  if (toggle2 == false)
+  {
+     gpsread = true;
+     GPS_READ_STARTED = true;
+  }
+
 }
 
 void action5()  // Sets Time To RTC

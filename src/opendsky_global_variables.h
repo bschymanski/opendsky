@@ -40,3 +40,6 @@ bool global_state_1sec=false;
 bool toggle2 = false;
 
 bool GPS_READ_STARTED = true;
+
+unsigned long previousMillis = 0;
+int oldSecond = 0;

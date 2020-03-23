@@ -847,9 +847,17 @@ void action2() { // Reads Time from RTC
   PrintMode();
   PrintAction();
   DateTime now = rtc.now();
+  // hundrets of seconds
+  if( oldSecond < now.second() )
+  {
+    oldSecond = now.second();
+    previousMillis = millis();
+  }
+  int hundreds = ( ( millis()-previousMillis )/10 )%100;
+  int subhundreds = hundreds - (hundreds % 10);
   imuval[4] = (now.hour());
   imuval[5] = (now.minute());
-  imuval[6] = ((now.second() * 100));
+  imuval[6] = ((now.second() *100 ) + subhundreds);
   setDigits();  
 }
 

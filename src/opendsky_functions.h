@@ -30,7 +30,7 @@ void validateAct()
  else if((verb == 16) && (noun == 17)) {action = 1;newAct = 0;}//Display IMU Attitude
  else if((verb == 16) && (noun == 36)) {action = 2;newAct = 0;}//Display RTC Time 
  else if((verb == 16) && (noun == 19)) {action = 9;newAct = 0;}//Display RTC Time & Temp
- else if((verb == 16) && (noun == 43)) {action = 3;newAct = 0;count = 0;}//Display current GPS
+ else if((verb == 16) && (noun == 43)) {action = 3;newAct = 0;}//Display current GPS
  else if((verb == 16) && (noun == 68)) {action = 4;newAct = 0;}//Display Range With 1202 ERROR
  else if((verb == 21) && (noun == 36)) {action = 5;newAct = 0;}//set time
  else if((verb == 21) && (noun == 37)) {action = 6;newAct = 0;}//set date
@@ -38,6 +38,47 @@ void validateAct()
  else{newAct = 0;action = 0;}
 }
 // End validateAct()
+
+void turnOffLamp(int lampNumber)
+{
+  pixels.setPixelColor(lampNumber, pixels.Color(0,0,0));
+  pixels.show();
+}
+
+void turnONLamp(int lampcolor, int lampnumber)
+{
+  switch (lampcolor)
+  {
+  case GREEN:
+    // white (r=0, g=100, b=0)
+    pixels.setPixelColor(lampnumber, pixels.Color(0,100,0));
+    pixels.show();
+    break;
+  case WHITE:
+    // white (r=100, g=100, b=100)
+    pixels.setPixelColor(lampnumber, pixels.Color(0,100,0));
+    pixels.show();
+    break;
+  case YELLOW:
+    // yellow (r=100, g=100, b=0)
+    pixels.setPixelColor(lampnumber, pixels.Color(100,100,0));
+    pixels.show();
+    break;
+  case RED:
+    // red (r=100, g=0, b=0)
+    pixels.setPixelColor(lampnumber, pixels.Color(100,0,0));
+    pixels.show();
+    break;
+  case BLUE:
+    // red (r=100, g=0, b=0)
+    pixels.setPixelColor(lampnumber, pixels.Color(0,0,100));
+    pixels.show();
+    break;
+  default:
+    // Statement(s)
+    break; // Wird nicht benötigt, wenn Statement(s) vorhanden sind
+  }
+}
 
 void lampit(byte r, byte g, byte b , int lamp)
 {
@@ -136,14 +177,14 @@ bool toggle_timer(void *)
     global_state_1sec=true;
     toggle2 = true;
     toggle = true;
-    tracker_light_on();
+    turnONLamp(GREEN, lampCompActy);
   }
   else
   {
     global_state_1sec=false;
     toggle2 = false;
     toggle = false;
-    tracker_light_off();
+    turnOffLamp(lampCompActy);
   }
   return true; // repeat? true
 }
@@ -181,11 +222,11 @@ void setdigits(byte maxim, byte digit, byte value){
 // setdigits()
 
 void PrintMode(){
-  lc.setDigit(0,2,mode,false);
+  // lc.setDigit(0,2,mode,false);
 }
 // PrintMode()
 void PrintAction(){
-  lc.setDigit(0,3,action,false);
+  // lc.setDigit(0,3,action,false);
 }
 // PrintAction()
 
@@ -402,66 +443,75 @@ void processkey2() // Process the Noun
 
 void processkey3()
 {
-  if((error == 1) && (keyVal == 17) && (fresh == 1))
-  {
-    error = 0;
-    lampit(0,0,0, 13);
+  if(keyVal == oldkey){
     fresh = 0;
-  } //resrt reeor
-  if((keyVal == 15) && (fresh == 1))
+  } 
+  else 
   {
-    prog = ((prognew[0] * 10) + (prognew[1]));
-    fresh = 0;
-    if((prog != 16) && (prog != 21) && (prog != 35) && (prog != 62) && (prog != 69) &&(prog != 70) && (prog != 0))
+    if((error == 1) && (keyVal == 17) && (fresh == 1))
     {
-      error = 1;
-    }
-    else
-    {
-      progold[0] = prognew[0];
-      progold[1] = prognew[1];
+      error = 0;
       lampit(0,0,0, 13);
-      mode = 0;
+      lc.setRow(0,2,digit_off); 
+      lc.setRow(0,3,digit_off); 
+      fresh = 0;
+    } //resrt reeor
+    if((keyVal == 15) && (fresh == 1))
+    {
+      fresh = 0;
+      prog = ((prognew[0] * 10) + (prognew[1]));
+      fresh = 0;
+      if((prog != 16) && (prog != 21) && (prog != 35) && (prog != 62) && (prog != 69) &&(prog != 70) && (prog != 0))
+      {
+        error = 1; noun = ((progold[0] * 10) + progold[1]);
+      }
+      else
+      {
+        progold[0] = prognew[0];
+        progold[1] = prognew[1];
+        lampit(0,0,0, 13);
+        mode = 0;
+        lampit(0,0,0, 14);
+        lampit(0,0,0, 1);
+        count = 0;
+        fresh = 0;
+        error = 0;
+        newAct = 1;
+      }
+    }
+    if(keyVal != oldkey)
+    {
+      fresh = 1;
+      oldkey = keyVal;
+    }
+    if((keyVal == 16) && (fresh == 1))
+    {
+      mode = oldmode;
       lampit(0,0,0, 14);
       lampit(0,0,0, 1);
       count = 0;
       fresh = 0;
-      error = 0;
-      newAct = 1;
+    }//verb 
+    if((keyVal == 11) && (fresh == 1))
+    {
+      mode = 2;
+      lampit(0,0,0, 1);
+      count = 0;
+      fresh = 0;
+    }//noun
+    if((keyVal == 10) && (fresh == 1))
+    {
+      mode = 1;
+      lampit(0,0,0, 1);
+      count = 0;
+      fresh = 0;
+    }//verb
+    if((keyVal < 10)&&(count < 2))
+    {
+      prognew[count] = keyVal;
+      setdigits(0, (count + 2), keyVal);
+      count++;
     }
-  }
-  if(keyVal != oldkey)
-  {
-    fresh = 1;
-    oldkey = keyVal;
-  }
-  if((keyVal == 16) && (fresh == 1))
-  {
-    mode = oldmode;
-    lampit(0,0,0, 14);
-    lampit(0,0,0, 1);
-    count = 0;
-    fresh = 0;
-  }//verb 
-  if((keyVal == 11) && (fresh == 1))
-  {
-    mode = 2;
-    lampit(0,0,0, 1);
-    count = 0;
-    fresh = 0;
-  }//noun
-  if((keyVal == 10) && (fresh == 1))
-  {
-    mode = 1;
-    lampit(0,0,0, 1);
-    count = 0;
-    fresh = 0;
-  }//verb
-  if((keyVal < 10)&&(count < 2))
-  {
-    prognew[count] = keyVal;
-    setdigits(0, (count + 2), keyVal);
-    count++;
   }
 }
 // End processkey3
@@ -617,8 +667,8 @@ void readimu()
 
 void mode0() //no action set just reading the kb
 {
-  PrintMode();
-  PrintAction();
+  //PrintMode();
+  //PrintAction();
   if (newAct == 1)
   {
     validateAct();
@@ -637,7 +687,7 @@ void mode0() //no action set just reading the kb
 
 void mode1() //inputing the verb
 {
-  PrintMode();
+  //PrintMode();
   flashkr();
   if(error == 1)
   {
@@ -655,7 +705,7 @@ void mode1() //inputing the verb
 
 void mode2() //inputing the noun
 {
-  PrintMode();
+  //PrintMode();
   //lampit(0,150,0, 0);
   flashkr();
   if(error == 1)
@@ -674,12 +724,12 @@ void mode2() //inputing the noun
 
 void mode3() //inputing the program
 {
-  PrintMode();
+  //PrintMode();
   lampit(0,150,0, 1);
   flashkr();
-   if(error == 1){flasher();}
- keyVal = readkb();
- processkey3();
+  if(error == 1){flasher();}
+  keyVal = readkb();
+  processkey3();
 }
 
 void startUp()
@@ -761,15 +811,15 @@ void startUp()
   }
   keyVal = 20;
   mode = 0;
-  PrintMode();
-  PrintAction();
+  //PrintMode();
+  //PrintAction();
   validateAct(); 
 }
 // End startUp
 
 void mode4() // Init / Lamptest
 {
-  PrintMode();
+  //PrintMode();
   // Light ON for: Noun, Prog, Verb and CompAct LEDs
   for (int index = 0; index < 4; index++)
   {
@@ -838,14 +888,14 @@ void mode4() // Init / Lamptest
 // End mode4
 
 void action1() {
- PrintMode();
- PrintAction();
+ //PrintMode();
+ //PrintAction();
  readimu(); 
 }
 
 void action2() { // Reads Time from RTC
-  PrintMode();
-  PrintAction();
+  //PrintMode();
+  //PrintAction();
   DateTime now = rtc.now();
   // hundrets of seconds
   if( oldSecond < now.second() )
@@ -867,8 +917,8 @@ void action2() { // Reads Time from RTC
 
 void action3() //Read GPS
 { 
-  PrintMode();
-  PrintAction();
+  //PrintMode();
+  //PrintAction();
   if (toggle2 == true && gpsread == true)
   {
     ALT_light_on();
@@ -908,8 +958,8 @@ void action3() //Read GPS
 
 void action5()  // Sets Time To RTC
 {
-  PrintMode();
-  PrintAction();
+  //PrintMode();
+  //PrintAction();
   DateTime now = rtc.now();
   int NYR = now.year();
   int NMO = now.month();
@@ -973,8 +1023,8 @@ void action5()  // Sets Time To RTC
 
 void action6()
 {
-  PrintMode();
-  PrintAction();
+  //PrintMode();
+  //PrintAction();
   byte setyear[4];
   byte setmonth[2];
   byte setday[2];
@@ -1000,14 +1050,14 @@ void action7() // Print GPS
 }
 void mode11() {
  compAct();
- PrintMode();
- PrintAction(); 
+ //PrintMode();
+ //PrintAction(); 
 }
 
 void tempDateTime()
 {
-  PrintMode();
-  PrintAction();
+  //PrintMode();
+  //PrintAction();
   compAct();
   Wire.beginTransmission(MPU_addr);
   Wire.write(0x3B);  // starting with register 0x3B (ACCEL_XOUT_H)
@@ -1063,7 +1113,7 @@ void tempDateTime()
   setdigits(3,5,(int(temp) % 10));
 }
 void action9(){
-  PrintMode();
-  PrintAction();
+  //PrintMode();
+  //PrintAction();
   tempDateTime();
 }
